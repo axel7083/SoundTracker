@@ -1,2 +1,8 @@
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = do
+   contents <- readFile "./test/instruments.txt"
+   print $ lines contents
+
+
+
+
