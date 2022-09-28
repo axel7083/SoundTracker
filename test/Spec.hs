@@ -60,12 +60,16 @@ decompose condition (x : xs) i  | x == condition  = Group i (getChildren conditi
                                 | otherwise       = decompose condition xs i
 
 
-parseFunction :: [String] -> Double
-parseFunction (x : xs) | x == "sin"      = sin 3
-                       | x == "pulse"    = 2
-                       | x == "triangle" = 8
-                       | otherwise       = error "The function is not recognized."
+-- Take an array and an index as argument
+-- return the value at index given parsed as a double
+asDouble :: [String] -> Int -> Double
+asDouble arr n = read (arr !! n):: Double
 
+-- Take as an argument a line ex: "sin 3.9 9.4 6.5 6.4" and return a FParam data containing the value parsed
+parseFunction :: [String] -> FParam
+parseFunction (x : xs) | x == "sin"                        = FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) 0 (asDouble xs 3)
+                       | x == "pulse" || x == "triangle"   = FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4)
+                       | otherwise       = error "The function is not recognized."
 
 -- Calcul la fréquence 
 -- f = 440*z^hauteur avec z = 2^(1/12)
@@ -91,5 +95,36 @@ demiTons "G#"  = 8
 demiTons "A"   = 9
 demiTons "A#"  = 10
 demiTons "B"   = 11
-demiTons _ = error "The note was not recognised."
+demiTons _     = error "The note was not recognised."
 
+-- This are the param used for every function
+
+data FParam = FParam
+  {
+    e :: Double
+  , a1 :: Double
+  , a2 :: Double
+  , q :: Double -- this will be equal to 0 when used for the sinus
+  , phi :: Double
+  }
+
+functionSin :: FParam -> Double -> Double -> Double
+functionSin param f t = ebl param t * sin (2 * pi * f * t + phi param)
+  
+functionPulse :: FParam -> Double -> Double -> Double
+functionPulse param f t | delta param t f < q param = ebl param t
+                        | otherwise                 = negate (ebl param t)
+  
+functionTriangle :: FParam -> Double -> Double -> Double
+functionTriangle param f t | delta param t f < q param = ebl param t * ((2 * delta param t f) / q param - 1)
+                           | otherwise                 = ebl param t * (1 - ((2*(delta param t f - q param))/(1 - q param)))
+  
+ebl :: FParam -> Double -> Double
+ebl param t | t <= e param = a1 param
+            | otherwise    = a2 param
+            
+deltaX :: FParam -> Double -> Double -> Double
+deltaX param t f = (t + phi param) * f
+
+delta :: FParam -> Double -> Double -> Double
+delta param t f = let x = deltaX param t f in x - fromInteger (floor x)
