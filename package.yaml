@@ -22,7 +22,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - bytestring >= 0.10.12.1
-
+- containers >= 0.6.4.1
 ghc-options:
 - -Wall
 - -Wcompat
@@ -48,6 +48,7 @@ executables:
     dependencies:
     - SoundTracker
     - bytestring
+    - containers
 
 tests:
   SoundTracker-test:
@@ -60,3 +61,4 @@ tests:
     dependencies:
     - SoundTracker
     - bytestring
+    - containers

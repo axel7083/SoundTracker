@@ -34,6 +34,7 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring >=0.10.12.1
+    , containers >=0.6.4.1
   default-language: Haskell2010
 
 executable SoundTracker-exe
@@ -47,12 +48,17 @@ executable SoundTracker-exe
       SoundTracker
     , base >=4.7 && <5
     , bytestring
+    , containers
   default-language: Haskell2010
 
 test-suite SoundTracker-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      DataSet
+      Instruments
+      Pistes
+      Utils
       Paths_SoundTracker
   hs-source-dirs:
       test
@@ -61,4 +67,5 @@ test-suite SoundTracker-test
       SoundTracker
     , base >=4.7 && <5
     , bytestring
+    , containers
   default-language: Haskell2010

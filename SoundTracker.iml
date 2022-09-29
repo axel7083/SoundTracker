@@ -16,5 +16,6 @@
     <orderEntry type="library" name="bytestring-0.10.12.1" level="project" />
     <orderEntry type="library" name="deepseq-1.4.5.0" level="project" />
     <orderEntry type="library" name="array-0.5.4.0" level="project" />
+    <orderEntry type="library" name="containers-0.6.4.1" level="project" />
   </component>
 </module>
