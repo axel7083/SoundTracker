@@ -1,8 +1,8 @@
-piste
+piste 2
 silence
 -
 -
-piste
+piste 0
 A 1 3.0
 -
 -
@@ -13,7 +13,7 @@ E 1 3.0
 F 1 3.0
 G 1 3.0
 H 1 3.0
-piste
+piste 1
 A# 2 3.0
 B# 2 3.0
 C# 2 3.0
