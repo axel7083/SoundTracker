@@ -54,13 +54,16 @@ tests = [
     duration (instructions (head parsedPistes) !! 1) == 2,
     volume (note (head $ instructions (head parsedPistes))) == 0,
     volume (note (instructions (head parsedPistes) !! 1)) == 3.0,
-    
+
     -- Testing parseInstrument
     length (parseInstrument instruments) == 3,
     instrumentId (head $ parseInstrument instruments) == 0,
     instrumentId (parseInstrument instruments !! 1) == 1,
-    length (ondes (parseInstrument instruments !! 1)) == 2
-    
+    length (ondes (parseInstrument instruments !! 1)) == 2,
+    -- Compare 
+    head (ondes (head (parseInstrument instruments))) 0.0 0.0 == functionSin (FParam 1.0 2.0 3.0 0.0 4.0)  0 0,
+    (ondes (head (parseInstrument instruments)) !! 1) 0.0 0.0 == functionPulse (FParam 1.0 2.0 3.0 4.0 5.0)  0 0,
+    (head (ondes ((parseInstrument instruments) !! 2))) 0.0 0.0 == functionTriangle (FParam 1.0 2.0 3.0 4.0 5.0)  0 0
   ]
 
 -- This function will ensure all the assert in tests are true, otherwise will raise an error
@@ -95,7 +98,7 @@ pistes = [
   , "silence"
   , "piste" -- index 2
   , "silence"
-  ]  
+  ]
 
 newtype Piste = Piste {instructions :: [Instruction]}
 
@@ -136,9 +139,9 @@ instruments = [
     , "instrument"
     , "triangle 1.0 2.0 3.0 4.0 5.0"
     , "sin 1.0 2.0 3.0 4.0"
-  ]  
- 
-data Instrument = Instrument 
+  ]
+
+data Instrument = Instrument
     {
       instrumentId :: Int
     , ondes :: [Double -> Double -> Double]

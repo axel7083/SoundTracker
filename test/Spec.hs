@@ -59,8 +59,12 @@ tests = [
     length (parseInstrument instruments) == 3,
     instrumentId (head $ parseInstrument instruments) == 0,
     instrumentId (parseInstrument instruments !! 1) == 1,
-    length (ondes (parseInstrument instruments !! 1)) == 2
-   
+    length (ondes (parseInstrument instruments !! 1)) == 2,
+    
+    -- Compare function sin pulse and triangle
+    head (ondes (head (parseInstrument instruments))) 0.0 0.0 == functionSin (FParam 1.0 2.0 3.0 0.0 4.0)  0 0,
+    (ondes (head (parseInstrument instruments)) !! 1) 0.0 0.0 == functionPulse (FParam 1.0 2.0 3.0 4.0 5.0)  0 0,
+    head (ondes (parseInstrument instruments !! 2)) 0.0 0.0 == functionTriangle (FParam 1.0 2.0 3.0 4.0 5.0)  0 0
   ]
 
 -- This function will ensure all the assert in tests are true, otherwise will raise an error
