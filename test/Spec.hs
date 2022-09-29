@@ -16,7 +16,6 @@ instrumentsSample = ["instrument"] ++ abc ++ ["instrument", "D"]
 tests :: [Bool]
 tests = [
     -- Test relative to the getChildren function
-    getChildren "instrument" instrumentsSample ==  abc,
     null (getChildren "instrument" ["instrument"]),
 
     -- Testing members function of Group Data
@@ -25,7 +24,41 @@ tests = [
 
     -- Testing Index function of Group Data
     index (head $ decompose "instrument" instrumentsSample 0) == 0,
-    index (decompose "instrument" instrumentsSample 0 !! 1) == 1
+    index (decompose "instrument" instrumentsSample 0 !! 1) == 1,
+
+    -- Testing parsePiste function
+    length (parsePiste "silence" 1 [
+        "-"
+      , "-"
+      , "A 1 3.0"
+    ]) == 2,
+    
+    duration (head (parsePiste "silence" 1 [
+            "-"
+          , "-"
+          , "A 1 3.0"
+        ])) == 3,
+        
+    duration (parsePiste "silence" 1 [
+                "-"
+              , "-"
+              , "A 1 3.0"
+            ] !! 1) == 1,
+    
+    content (head (parsePiste "silence" 1 [
+                "-"
+              , "-"
+              , "A 1 3.0"
+            ])) == "silence",
+            
+    content (parsePiste "silence" 1 [
+                    "-"
+                  , "-"
+                  , "A 1 3.0"
+                ] !! 1) == "A 1 3.0",
+                
+    length (parsePistes pistes) == 3,
+    let instru = head (instructions (head (parsePistes pistes))) in duration instru == 3 && content instru == "silence"
   ]
 
 -- This function will ensure all the assert in tests are true, otherwise will raise an error
@@ -36,6 +69,54 @@ runTests (x : xs) i | x = runTests xs (i + 1)
 
 
 -- == Function related to the TP1 ==
+
+
+-- Here is the value than must be at the first line of our order.txt
+durationInstruction :: Double
+durationInstruction = 2.0
+
+patrons :: [String]
+patrons = [
+    "0 1 2"
+  , "2 1"
+  ]
+
+pistes :: [String]
+pistes = [
+    "piste" -- index 0
+  , "silence"
+  , "-"
+  , "-"
+  , "A 1 3.0"
+  , "-"
+  , "piste" -- index 1
+  , "silence"
+  , "piste" -- index 2
+  , "silence"
+  ]
+
+newtype Piste = Piste {instructions :: [Instruction]}
+
+data Instruction = Instruction
+  {
+      duration :: Int
+  ,   content :: String
+  }
+
+
+parsePiste :: String -> Int -> [String] -> [Instruction]
+parsePiste prev count arr | null arr          = [Instruction count prev]
+                          | head arr == "-"   = parsePiste prev (count + 1) (tail arr)
+                          | otherwise         = Instruction count prev : parsePiste (head arr) 1 (tail arr)
+
+_parsePiste :: Group -> Piste
+_parsePiste group = Piste (let raw_lines = members group in parsePiste (head raw_lines) 1 (tail raw_lines))
+
+parsePistes :: [String] -> [Piste]
+parsePistes raw_lines = let groups = decompose "piste" raw_lines 0 in map _parsePiste groups
+
+
+
 
 -- This method will take two argument, a stop condition and an array
 -- Example getChildren ( "S" ["A", "B", "S", "C"] ) = ["A", "B"]
