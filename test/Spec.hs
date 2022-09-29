@@ -60,16 +60,34 @@ decompose condition (x : xs) i  | x == condition  = Group i (getChildren conditi
                                 | otherwise       = decompose condition xs i
 
 
+
+
+
+-- échantillon
+-- ondes  : liste de fonction d'ondes non parsé ex; ["sin 3 8 5 5", "pulse 4 5 5 5"...]
+-- volume : valeur du volume
+-- temps  : valeur du temps
+echantillon :: [String] -> Double -> Double -> Double
+echantillon ondes volume temp = volume * 1
+
+computerOnde :: String -> Double -> Double -> Double
+computerOnde onde f t = parseFunction (words onde) f t
+
+
 -- Take an array and an index as argument
 -- return the value at index given parsed as a double
 asDouble :: [String] -> Int -> Double
 asDouble arr n = read (arr !! n):: Double
 
--- Take as an argument a line ex: "sin 3.9 9.4 6.5 6.4" and return a FParam data containing the value parsed
-parseFunction :: [String] -> FParam
-parseFunction (x : xs) | x == "sin"                        = FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) 0 (asDouble xs 3)
-                       | x == "pulse" || x == "triangle"   = FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4)
-                       | otherwise       = error "The function is not recognized."
+
+-- [String] line : ex ["sin","3"...]
+-- Frequence
+-- time
+parseFunction :: [String] -> Double -> Double -> Double
+parseFunction (x : xs) f t | x == "sin"                        = functionSin   (FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) 0 (asDouble xs 3)) f t
+                           | x == "pulse"                      = functionPulse ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4)) f t
+                           | x == "triangle"                   = functionTriangle ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4)) f t
+                           | otherwise                         = error "The function is not recognized."
 
 -- Calcul la fréquence 
 -- f = 440*z^hauteur avec z = 2^(1/12)
