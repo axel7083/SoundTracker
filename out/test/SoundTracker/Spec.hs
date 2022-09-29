@@ -35,25 +35,32 @@ tests = [
       , "-"
       , "A 1 3.0"
     ]) == 2,
-    
+
     duration (head (parsePiste "silence" 1 1 [
             "-"
           , "-"
           , "A 1 3.0"
         ])) == 3,
-        
+
     duration (parsePiste "silence" 1 1 [
                 "-"
               , "-"
               , "A 1 3.0"
             ] !! 1) == 1,
-                
+
     length parsedPistes == 3,
     length (instructions (head parsedPistes)) == 2,
     duration (head $ instructions (head parsedPistes)) == 3,
     duration (instructions (head parsedPistes) !! 1) == 2,
     volume (note (head $ instructions (head parsedPistes))) == 0,
-    volume (note (instructions (head parsedPistes) !! 1)) == 3.0
+    volume (note (instructions (head parsedPistes) !! 1)) == 3.0,
+    
+    -- Testing parseInstrument
+    length (parseInstrument instruments) == 3,
+    instrumentId (head $ parseInstrument instruments) == 0,
+    instrumentId (parseInstrument instruments !! 1) == 1,
+    length (ondes (parseInstrument instruments !! 1)) == 2
+    
   ]
 
 -- This function will ensure all the assert in tests are true, otherwise will raise an error
@@ -88,7 +95,7 @@ pistes = [
   , "silence"
   , "piste" -- index 2
   , "silence"
-  ]
+  ]  
 
 newtype Piste = Piste {instructions :: [Instruction]}
 
@@ -106,17 +113,45 @@ parsedPistes = parsePistes pistes
 parsePiste :: String -> Int -> Int -> [String] -> [Instruction]
 parsePiste prev instruId count arr | null arr          = [Instruction count instruId (parseNote (words prev))]
                                    | head arr == "-"   = parsePiste prev instruId (count + 1) (tail arr)
-                                   | otherwise         = Instruction count instruId (parseNote (words prev)) : 
-                                                            let n_piste = words (head arr) in 
+                                   | otherwise         = Instruction count instruId (parseNote (words prev)) :
+                                                            let n_piste = words (head arr) in
                                                               parsePiste (head arr) (read (n_piste !! 1) :: Int) 1 (tail arr)
 
 _parsePiste :: Group -> Piste
-_parsePiste group = Piste (let raw_lines = members group in let n_piste = words (head raw_lines) in 
+_parsePiste group = Piste (let raw_lines = members group in let n_piste = words (head raw_lines) in
                                                               parsePiste (head raw_lines) (read (n_piste !! 1) :: Int) 1 (tail raw_lines))
 
 -- Parse a pistes files (argument is the lines)
 parsePistes :: [String] -> [Piste]
 parsePistes raw_lines = let groups = decompose "piste" raw_lines 0 in map _parsePiste groups
+
+instruments :: [String]
+instruments = [
+      "instrument"
+    , "sin 1.0 2.0 3.0 4.0"
+    , "pulse 1.0 2.0 3.0 4.0 5.0"
+    , "instrument"
+    , "pulse 1.0 2.0 3.0 4.0 5.0"
+    , "sin 1.0 2.0 3.0 4.0"
+    , "instrument"
+    , "triangle 1.0 2.0 3.0 4.0 5.0"
+    , "sin 1.0 2.0 3.0 4.0"
+  ]  
+ 
+data Instrument = Instrument 
+    {
+      instrumentId :: Int
+    , ondes :: [Double -> Double -> Double]
+    }
+
+
+groupToInstrument :: Group -> Instrument
+groupToInstrument group = Instrument (index group) (map (parseFunction.words) (members group))
+
+parseInstrument :: [String] -> [Instrument]
+parseInstrument arr = let groups = decompose "instrument" arr 0 in map groupToInstrument groups
+
+
 
 
 
@@ -163,15 +198,13 @@ asDouble arr n = read (arr !! n):: Double
 
 -- [String] line : ex ["sin","3"...]
 parseFunction :: [String] -> Double -> Double -> Double
-parseFunction (x : xs) | x == "silence"                    = functionSilence
-                       | x == "sin"                        = functionSin   (FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) 0 (asDouble xs 3))
+parseFunction (x : xs) | x == "sin"                        = functionSin   (FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) 0 (asDouble xs 3))
                        | x == "pulse"                      = functionPulse ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4))
                        | x == "triangle"                   = functionTriangle ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4))
                        | otherwise                         = error "The function is not recognized."
 
 
-
-data Note = Note 
+data Note = Note
   {
       frequence :: Double
   ,   volume    :: Double
@@ -217,9 +250,6 @@ data FParam = FParam
   , q :: Double -- this will be equal to 0 when used for the sinus
   , phi :: Double
   }
-
-functionSilence :: Double -> Double -> Double
-functionSilence _ _ = 0.0
 
 functionSin :: FParam -> Double -> Double -> Double
 functionSin param f t = ebl param t * sin (2 * pi * f * t + phi param)
