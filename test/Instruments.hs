@@ -1,16 +1,21 @@
-module Instruments (Note, Instrument, parseNote) where
+module Instruments (parseNote, computeNote) where
 
-  
 import Utils
 import DataSet
 
-data Instrument = Instrument
-    {
-      instrumentId :: Int
-    , ondes :: [Double -> Double -> Double]
-    }  
-  
-  
+import Structs
+
+
+
+-- currently need to be reverse since we start by the end (using recursive)
+createPeriode :: Instruction -> Instrument -> Int -> [Double]
+createPeriode _ _ 0 = []
+createPeriode instruction instrument count = [computeNote instruction instrument (fromIntegral count)] ++ createPeriode instruction instrument (count - 1)
+
+computeNote :: Instruction -> Instrument -> Double -> Double
+computeNote instruction instrument time = let _note = note instruction in
+                                        volume _note * sum (map (\x -> x (frequence _note) time) (ondes instrument))
+                                                                                                          
 parsedInstruments :: [Instrument]
 parsedInstruments = parseInstrument instruments
 
@@ -20,17 +25,15 @@ groupToInstrument group = Instrument (index group) (map (parseFunction.words) (m
 parseInstrument :: [String] -> [Instrument]
 parseInstrument arr = let groups = decompose "instrument" arr 0 in map groupToInstrument groups
 
-  
 -- échantillon
 -- ondes  : liste de fonction d'ondes non parsé ex; ["sin 3 8 5 5", "pulse 4 5 5 5"...]
 -- volume : valeur du volume
 -- temps  : valeur du temps
-echantillon :: [String] -> Double -> Double -> Double
-echantillon ondes volume temp = volume * 1
+-- echantillon :: [String] -> Double -> Double -> Double
+-- echantillon ondes volume temp = volume * 1
 
 computerOnde :: String -> Double -> Double -> Double
 computerOnde onde f t = parseFunction (words onde) f t
-
 
 -- Take an array and an index as argument
 -- return the value at index given parsed as a double
@@ -44,13 +47,6 @@ parseFunction (x : xs) | x == "sin"                        = functionSin   (FPar
                        | x == "pulse"                      = functionPulse ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4))
                        | x == "triangle"                   = functionTriangle ( FParam (asDouble xs 0) (asDouble xs 1) (asDouble xs 2) (asDouble xs 3) (asDouble xs 4))
                        | otherwise                         = error "The function is not recognized."
-
-
-data Note = Note
-  {
-      frequence :: Double
-  ,   volume    :: Double
-  }
 
 parseNote :: [String] -> Note
 parseNote (x : xs) | x == "silence" = Note 0 0

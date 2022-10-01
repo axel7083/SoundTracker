@@ -1,26 +1,21 @@
 module Pistes where
 
-import Data.Map (Map, fromList)
 import Instruments
+import Structs
+import Data.Map (Map, fromList)
 import Utils
 import DataSet
-
-data Instruction = Instruction
-  {
-      duration :: Int -- number of "-" + 1
-  ,   instrument :: Int -- instrument id (index)
-  ,   note :: Note -- the note
-  }
-
-data Piste = Piste {
-    pisteId :: Int  
-  , instructions :: [Instruction]
-}
     
 -- example computePatron [1, 2, 3]
 computePatron :: [Int] -> [Double]
 computePatron [] = []
 computePatron (x : xs) = let piste = getLogN x hashedPistes in [] ++ computePatron xs
+
+computePiste :: Piste -> [Double]
+computePiste piste = let instru = instructions piste in _computeInstruction instru
+  
+_computeInstruction :: [Instruction] -> [Double] 
+_computeInstruction instrus = [] 
 
 extractPisteId :: Piste -> (Int, Piste)
 extractPisteId piste = (pisteId piste,piste)

@@ -58,6 +58,7 @@ test-suite SoundTracker-test
       DataSet
       Instruments
       Pistes
+      Structs
       Utils
       Paths_SoundTracker
   hs-source-dirs:

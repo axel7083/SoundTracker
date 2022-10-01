@@ -3,8 +3,6 @@ main = do
    print $ runTests tests 0
    
 
-
-   
 tests :: [Bool]
 tests = [
     -- Test relative to the getChildren function

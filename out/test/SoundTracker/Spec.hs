@@ -1,22 +1,8 @@
-import Data.Map (Map, singleton, fromList, lookup)
-import qualified Data.Map as Map
-import Data.Maybe (fromJust)
-import Prelude hiding (lookup)
-import Instruments
-
 main :: IO ()
 main = do
-   -- orders <- readFile "./test/instruments.txt"
-   -- First extracts the lines of order
-   -- let raw_lines = lines orders
-   -- print (read (head raw_lines) :: Double)
-   --
-   -- members ((decompose "piste" ["piste", "silence", "-", "A 2 3", "-"] 0) !! 0) == ["silence","-","A 2 3","-"]
    print $ runTests tests 0
    
 
-
-   
 tests :: [Bool]
 tests = [
     -- Test relative to the getChildren function

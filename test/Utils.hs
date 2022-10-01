@@ -1,5 +1,6 @@
-module Utils (getLogN, Group, index, members, decompose) where
+module Utils (getLogN, decompose) where
 
+import Structs
 import Data.Map (Map, lookup)
 import Data.Maybe (fromJust)
 import Prelude hiding (lookup)
@@ -15,12 +16,6 @@ getChildren _ [] = []
 getChildren stop (x : xs) | stop == x = []
                           | otherwise = x : getChildren stop xs
 
--- When parsing a file we need to group the content
-data Group = Group
-  {
-    index :: Int
-  , members :: [String]
-  }
 
 -- This will return a list of Group were each group contain the lines between the stop condition
 -- Example
