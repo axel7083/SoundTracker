@@ -11,11 +11,16 @@ computePatron :: [Int] -> [Double]
 computePatron [] = []
 computePatron (x : xs) = let piste = getLogN x hashedPistes in [] ++ computePatron xs
 
+-- sumPiste :: [[Double]] -> [Double]
+
+
 computePiste :: Piste -> [Double]
 computePiste piste = let instru = instructions piste in _computeInstruction instru
   
+-- TODO: Calling createPeriode with the count argument as duration x considere that Dc (the first value in order is 1) 
 _computeInstruction :: [Instruction] -> [Double] 
-_computeInstruction instrus = [] 
+_computeInstruction [] = [] 
+_computeInstruction (x : xs) = createPeriode x (duration x) ++ _computeInstruction xs
 
 extractPisteId :: Piste -> (Int, Piste)
 extractPisteId piste = (pisteId piste,piste)

@@ -1,20 +1,30 @@
-module Instruments (parseNote, computeNote) where
+module Instruments (parseNote, computeNote, createPeriode) where
 
+import Data.Map (Map, fromList)
 import Utils
 import DataSet
 
 import Structs
 
+extractInstrumentId :: Instrument -> (Int, Instrument)
+extractInstrumentId instru = (instrumentId instru,instru)
 
+-- Having to do O(n) each time we want to access a piste is too heavy
+-- we can easily reduce to O(log(n)) using a Map
+hashedInstruments :: Map Int Instrument
+hashedInstruments = fromList (map extractInstrumentId parsedInstruments)
 
 -- currently need to be reverse since we start by the end (using recursive)
-createPeriode :: Instruction -> Instrument -> Int -> [Double]
-createPeriode _ _ 0 = []
-createPeriode instruction instrument count = [computeNote instruction instrument (fromIntegral count)] ++ createPeriode instruction instrument (count - 1)
+createPeriode :: Instruction -> Int -> [Double]
+createPeriode _ 0 = []
+createPeriode instruction count = [computeNote instruction (fromIntegral count)] ++ 
+                                                                  createPeriode instruction (count - 1)
 
-computeNote :: Instruction -> Instrument -> Double -> Double
-computeNote instruction instrument time = let _note = note instruction in
-                                        volume _note * sum (map (\x -> x (frequence _note) time) (ondes instrument))
+computeNote :: Instruction -> Double -> Double
+computeNote instruction time = let _note = note instruction
+                                   _instru = (getLogN (instrument instruction) hashedInstruments)
+                                   in
+                                        volume _note * sum (map (\x -> x (frequence _note) time) (ondes _instru))
                                                                                                           
 parsedInstruments :: [Instrument]
 parsedInstruments = parseInstrument instruments

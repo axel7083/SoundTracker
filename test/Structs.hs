@@ -5,11 +5,17 @@ Instrument ( Instrument ), instrumentId, ondes,
 Instruction ( Instruction ), duration, instrument, note,
 Piste ( Piste ), pisteId, instructions) where
 
--- When parsing a file we need to group the content
-data Group = Group
+  
+data Piste = Piste {
+    pisteId :: Int  
+  , instructions :: [Instruction]
+}
+
+data Instruction = Instruction
   {
-    index :: Int
-  , members :: [String]
+      duration :: Int -- number of "-" + 1
+  ,   instrument :: Int -- instrument id (index)
+  ,   note :: Note -- the note
   }
 
 data Note = Note
@@ -23,15 +29,10 @@ data Instrument = Instrument
       instrumentId :: Int
     , ondes :: [Double -> Double -> Double] -- args: f t => double
     }  
-    
-data Instruction = Instruction
-  {
-      duration :: Int -- number of "-" + 1
-  ,   instrument :: Int -- instrument id (index)
-  ,   note :: Note -- the note
-  }
 
-data Piste = Piste {
-    pisteId :: Int  
-  , instructions :: [Instruction]
-}
+-- When parsing a file we need to group the content
+data Group = Group
+  {
+    index :: Int
+  , members :: [String]
+  }
