@@ -1,18 +1,32 @@
-module Pistes where
+module Pistes (sumIPiste, sumPiste, concatPatrons, hashedPistes) where
 
 import Instruments
 import Structs
 import Data.Map (Map, fromList)
 import Utils
 import DataSet
-    
+import Debug.Trace (trace)
+  
+concatPatrons :: [[Int]] -> [Double]  
+concatPatrons [] = []
+concatPatrons (x : xs) =(computePatron x ++ concatPatrons xs)
+  
 -- example computePatron [1, 2, 3]
 computePatron :: [Int] -> [Double]
-computePatron [] = []
-computePatron (x : xs) = let piste = getLogN x hashedPistes in [] ++ computePatron xs
+computePatron arr = let matrix = (getPisteMatrix arr) in sumPiste (length (head matrix) - 1) matrix
 
--- sumPiste :: [[Double]] -> [Double]
+getPisteMatrix :: [Int] -> [[Double]]
+getPisteMatrix [] = []
+getPisteMatrix (x : xs) = let piste = getLogN x hashedPistes in [computePiste piste] ++ getPisteMatrix xs
 
+-- sum the column i
+sumIPiste :: Int -> [[Double]] -> Double
+sumIPiste _ [] = 0
+sumIPiste i (x : xs)  = (x !! i) + sumIPiste i xs
+
+sumPiste :: Int -> [[Double]] -> [Double]
+sumPiste 0 arr = [sumIPiste 0 arr]
+sumPiste i arr = sumPiste (i - 1) arr ++ [sumIPiste i arr]
 
 computePiste :: Piste -> [Double]
 computePiste piste = let instru = instructions piste in _computeInstruction instru
@@ -20,7 +34,7 @@ computePiste piste = let instru = instructions piste in _computeInstruction inst
 -- TODO: Calling createPeriode with the count argument as duration x considere that Dc (the first value in order is 1) 
 _computeInstruction :: [Instruction] -> [Double] 
 _computeInstruction [] = [] 
-_computeInstruction (x : xs) = createPeriode x (duration x) ++ _computeInstruction xs
+_computeInstruction (x : xs) = createPeriode x (floor (0.25*44100*(fromIntegral(duration x)))) ++ _computeInstruction xs
 
 extractPisteId :: Piste -> (Int, Piste)
 extractPisteId piste = (pisteId piste,piste)
@@ -40,11 +54,14 @@ parsePiste prev instruId count arr | null arr          = [Instruction count inst
                                    | head arr == "-"   = parsePiste prev instruId (count + 1) (tail arr)
                                    | otherwise         = Instruction count instruId (parseNote (words prev)) :
                                                             let n_piste = words (head arr) in
-                                                              parsePiste (head arr) (read (n_piste !! 1) :: Int) 1 (tail arr)
+                                                              _halfParse n_piste arr
+-- oui oui
+_halfParse :: [String] -> [String] -> [Instruction]
+_halfParse (x : xs) raw_lines | x == "silence" = parsePiste "silence" (-1) 1 (tail raw_lines)
+                              | otherwise = parsePiste (head raw_lines) (read (head xs) :: Int) 1 (tail raw_lines)
 
 _parsePiste :: Group -> Piste
-_parsePiste group = Piste (index group) (let raw_lines = members group in let n_piste = words (head raw_lines) in
-                                                              parsePiste (head raw_lines) (read (n_piste !! 1) :: Int) 1 (tail raw_lines))
+_parsePiste group = Piste (read (words (title group) !! 1) :: Int) (let raw_lines = members group in let n_piste = words (head raw_lines) in _halfParse n_piste raw_lines) 
 
 -- Parse a pistes files (argument is the lines)
 parsePistes :: [String] -> [Piste]

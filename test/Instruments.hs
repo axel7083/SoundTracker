@@ -1,10 +1,11 @@
-module Instruments (parseNote, computeNote, createPeriode) where
+module Instruments (parseNote, computeNote, createPeriode, hashedInstruments) where
 
 import Data.Map (Map, fromList)
 import Utils
 import DataSet
 
 import Structs
+import Debug.Trace (trace)
 
 extractInstrumentId :: Instrument -> (Int, Instrument)
 extractInstrumentId instru = (instrumentId instru,instru)
@@ -14,18 +15,18 @@ extractInstrumentId instru = (instrumentId instru,instru)
 hashedInstruments :: Map Int Instrument
 hashedInstruments = fromList (map extractInstrumentId parsedInstruments)
 
--- currently need to be reverse since we start by the end (using recursive)
+-- cool
 createPeriode :: Instruction -> Int -> [Double]
 createPeriode _ 0 = []
-createPeriode instruction count = [computeNote instruction (fromIntegral count)] ++ 
-                                                                  createPeriode instruction (count - 1)
+createPeriode instruction count = createPeriode instruction (count - 1) ++ [computeNote instruction (fromIntegral count)]
 
 computeNote :: Instruction -> Double -> Double
-computeNote instruction time = let _note = note instruction
-                                   _instru = (getLogN (instrument instruction) hashedInstruments)
+computeNote instruction time | instrument instruction == (-1) = 0
+                             | otherwise = let _note = note instruction in
+                              let _instru = (getLogN (instrument instruction) hashedInstruments)
                                    in
                                         volume _note * sum (map (\x -> x (frequence _note) time) (ondes _instru))
-                                                                                                          
+                                                                                    
 parsedInstruments :: [Instrument]
 parsedInstruments = parseInstrument instruments
 

@@ -12,15 +12,19 @@ patrons = [
   
 pistes :: [String]
 pistes = [
-    "piste" -- index 0
+    "piste 0" -- index 0
   , "silence"
-  , "-"
   , "-"
   , "A 1 3.0"
   , "-"
-  , "piste" -- index 1
+  , "piste 1" -- index 1
+  , "B 1 3.0"
+  , "-"
+  , "-"
+  , "-"
+  , "piste 2" -- index 2
   , "silence"
-  , "piste" -- index 2
+  , "silence"
   , "silence"
   ]
 

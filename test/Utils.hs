@@ -13,7 +13,7 @@ getLogN i m = fromJust $ lookup i m
 -- Example getChildren ( "S" ["A", "B", "S", "C"] ) = ["A", "B"]
 getChildren :: String -> [String] -> [String]
 getChildren _ [] = []
-getChildren stop (x : xs) | stop == x = []
+getChildren stop (x : xs) | stop == head (words x) = []
                           | otherwise = x : getChildren stop xs
 
 
@@ -22,5 +22,5 @@ getChildren stop (x : xs) | stop == x = []
 -- (decompose "A" ["A", "1", "2", "A", "3"] 0) will return [Group 0 ["1", "2"], Group 1 ["3"]]
 decompose :: String -> [String] -> Int -> [Group]
 decompose _ [] _ = []
-decompose condition (x : xs) i  | x == condition  = Group i (getChildren condition xs) : decompose condition xs (i + 1)
+decompose condition (x : xs) i  | head (words x) == condition = Group i (getChildren condition xs) x: decompose condition xs (i + 1)
                                 | otherwise       = decompose condition xs i
