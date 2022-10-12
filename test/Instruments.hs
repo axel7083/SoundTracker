@@ -75,19 +75,20 @@ computehauteur octave note = 12.0 * octave + demiTons note - 57
 
 -- Demi ton (from table)
 demiTons :: String -> Double
-demiTons "C"   = 0.0
-demiTons "C#"  = 1.0
-demiTons "D"   = 2.0
-demiTons "D#"  = 3.0
-demiTons "E"   = 4.0
-demiTons "F"   = 5.0
-demiTons "F#"  = 6.0
-demiTons "G"   = 7.0
-demiTons "G#"  = 8.0
-demiTons "A"   = 9.0
-demiTons "A#"  = 10.0
-demiTons "B"   = 11.0
-demiTons _     = error "The note was not recognised."
+demiTons i = case i of
+  "C"   -> 0.0
+  "C#"  -> 1.0
+  "D"   -> 2.0
+  "D#"  -> 3.0
+  "E"   -> 4.0
+  "F"   -> 5.0
+  "F#"  -> 6.0
+  "G"   -> 7.0
+  "G#"  -> 8.0
+  "A"   -> 9.0
+  "A#"  -> 10.0
+  "B"   -> 11.0
+  _     -> error "The note was not recognised."
 
 -- This are the param used for every function
 
