@@ -6,7 +6,7 @@ import Data.Map (Map, fromList)
 import Utils
 import DataSet
 import Debug.Trace (trace)
-  
+
 concatPatrons :: [[Int]] -> [Double]  
 concatPatrons [] = []
 concatPatrons (x : xs) =(computePatron x ++ concatPatrons xs)

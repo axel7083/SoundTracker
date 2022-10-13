@@ -5,9 +5,8 @@ Instrument ( Instrument ), instrumentId, ondes,
 Instruction ( Instruction ), duration, instrument, note,
 Piste ( Piste ), pisteId, instructions) where
 
-  
 data Piste = Piste {
-    pisteId :: Int  
+    pisteId :: !Int  
   , instructions :: [Instruction]
 } deriving (Show)
 
@@ -26,14 +25,15 @@ data Note = Note
   
 data Instrument = Instrument
     {
-      instrumentId :: Int
+      instrumentId :: !Int
     , ondes :: [Double -> Double -> Double] -- args: f t => double
     } 
 
 -- When parsing a file we need to group the content
 data Group = Group
   {
-    index :: Int
-  , members :: [String]
-  , title :: String
+    index :: !Int
+  , members :: ![String]
+  , title :: !String
   } deriving (Show)
+  

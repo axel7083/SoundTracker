@@ -43,8 +43,8 @@ parseInstrument arr = let groups = decompose "instrument" arr 0 in map groupToIn
 -- echantillon :: [String] -> Double -> Double -> Double
 -- echantillon ondes volume temp = volume * 1
 
-computerOnde :: String -> Double -> Double -> Double
-computerOnde onde f t = parseFunction (words onde) f t
+-- computerOnde :: String -> Double -> Double -> Double
+-- computerOnde onde f t = parseFunction (words onde) f t
 
 -- Take an array and an index as argument
 -- return the value at index given parsed as a double

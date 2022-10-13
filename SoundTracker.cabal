@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Parsing
+      Structures
   other-modules:
       Paths_SoundTracker
   hs-source-dirs:
