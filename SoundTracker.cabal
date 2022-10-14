@@ -25,8 +25,8 @@ source-repository head
 
 library
   exposed-modules:
+      CalculUtils
       FileUtils
-      Lib
       Parsing
       Structures
   other-modules:
@@ -58,11 +58,6 @@ test-suite SoundTracker-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      DataSet
-      Instruments
-      Pistes
-      Structs
-      Utils
       Paths_SoundTracker
   hs-source-dirs:
       test

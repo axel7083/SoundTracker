@@ -1,4 +1,14 @@
-module FileUtils (ecrireWave, _FREQUENCE_ECHANTILLONAGE, _AMPLITUDE_MAXIMUM_DOUBLE, _AMPLITUDE_MAXIMUM) where
+module FileUtils (
+ecrireWave, 
+_FREQUENCE_ECHANTILLONAGE, 
+_AMPLITUDE_MAXIMUM_DOUBLE, 
+_AMPLITUDE_MAXIMUM,
+_POSITION_ARG_NOM_FICHIER_INSTRUMENTS,
+_MSSG_ERREUR_NOMBRE_ARGUMENT,
+_POSITION_ARG_NOM_FICHIER_TRACKS,
+_POSITION_ARG_NOM_FICHIER_COMPOSITION,
+_POSITION_ARG_NOM_FICHIER_WAVE
+) where
 
 import Data.Int
 import Data.ByteString.Builder
@@ -7,7 +17,6 @@ import qualified GHC.IO.Handle.FD
 import qualified GHC.IO.Handle.Types
 import qualified GHC.IO.IOMode
 import System.Environment
-import Lib
 
 ------------------------------------------------------------------------
 -- Le code suivant construit le fichier .WAV.                         --

@@ -86,7 +86,7 @@ parsePistes content = {-# SCC "parsePistes" #-} pistes
 parseInstructions :: [String] -> [Instruction]
 parseInstructions raw_lines = {-# SCC "parseInstructions" #-} instrus
                                 where
-                                  groups = decompose (\x -> x /= "-") raw_lines 0
+                                  groups = decompose (/= "-") raw_lines 0
                                   instrus = [
                                     Instruction
                                       (length m + 1)
@@ -94,7 +94,7 @@ parseInstructions raw_lines = {-# SCC "parseInstructions" #-} instrus
                                       | Group {members = m, title = t} <- groups
                                     ]
 
--- [""]
+--
 parseNote :: [String] -> Note
 parseNote (x : xs) | x == "silence" = Note 0 0
                      | otherwise      = Note 
