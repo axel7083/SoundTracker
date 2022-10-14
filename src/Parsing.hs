@@ -1,5 +1,4 @@
 module Parsing (parseInstruments, parseComposition, parsePistes) where
-
 import Structures
 
 -- ==================================================================
@@ -7,9 +6,9 @@ import Structures
 -- ==================================================================  
 
 parseInstruments :: String -> [Instrument]
-parseInstruments content = instruments
+parseInstruments content = {-# SCC "parseInstruments" #-} instruments
                             where
-                              groups = decompose (\x -> x == "instrument") (lines content) 0
+                              groups = decompose (== "instrument") (lines content) 0
                               instruments = [
                                 Instrument 
                                   (index group)                                -- instrument id
@@ -54,7 +53,7 @@ delta param t f = let x = deltaX param t f in x - fromInteger (floor x)
 -- | Parse a composition file
 -- The first line is a Double value, and each following line is a list of Integer separated by a space
 parseComposition :: String -> (Double, [[Int]])
-parseComposition content = (speed, patrons)
+parseComposition content = {-# SCC "parseComposition" #-} (speed, patrons)
                             where
                               raw_lines = lines content
                               speed = read (head raw_lines) :: Double
@@ -65,7 +64,7 @@ parseComposition content = (speed, patrons)
 -- ==================================================================  
   
 parsePistes :: String -> [Piste]
-parsePistes content = pistes
+parsePistes content = {-# SCC "parsePistes" #-} pistes
                         where
                           groups = decompose (\x -> head (words x) == "piste") (lines content) 0
                           pistes = [
@@ -85,7 +84,7 @@ parsePistes content = pistes
 -- -
 -- B 1 3.0
 parseInstructions :: [String] -> [Instruction]
-parseInstructions raw_lines = instrus
+parseInstructions raw_lines = {-# SCC "parseInstructions" #-} instrus
                                 where
                                   groups = decompose (\x -> x /= "-") raw_lines 0
                                   instrus = [
@@ -95,6 +94,7 @@ parseInstructions raw_lines = instrus
                                       | Group {members = m, title = t} <- groups
                                     ]
 
+-- [""]
 parseNote :: [String] -> Note
 parseNote (x : xs) | x == "silence" = Note 0 0
                      | otherwise      = Note 
@@ -137,5 +137,5 @@ demiTons i = case i of
 -- (decompose "A" ["A", "1", "2", "A", "3"] 0) will return [Group 0 ["1", "2"], Group 1 ["3"]]
 decompose :: (String -> Bool) -> [String] -> Int -> [Group]
 decompose _ [] _ = []
-decompose f (x : xs) i  | f x       = Group i (takeWhile f xs) x : decompose f xs (i + 1)
+decompose f (x : xs) i  | f x       = Group i (takeWhile (not.f) xs) x : decompose f xs (i + 1)
                         | otherwise = decompose f xs i

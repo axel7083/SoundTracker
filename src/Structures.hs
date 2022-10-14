@@ -20,7 +20,6 @@ data Piste = Piste {
 data Instruction = Instruction
   {
       duration :: !Int -- number of "-" + 1
-  --,   instrument :: !Int -- instrument id (index)
   ,   note :: !Note -- the note
   } deriving (Show)
 
@@ -39,16 +38,16 @@ data Instrument = Instrument
 -- When parsing a file we need to group the content
 data Group = Group
   {
-    index :: Int
-  , members :: [String]
-  , title :: String
+    index :: !Int
+  , members :: ![String]
+  , title :: !String
   } deriving (Show)
   
 data FParam = FParam
   {
-    e :: Double
-  , a1 :: Double
-  , a2 :: Double
-  , q :: Double -- this will be equal to 0 when used for the sinus
-  , phi :: Double
+    e :: !Double
+  , a1 :: !Double
+  , a2 :: !Double
+  , q :: !Double -- this will be equal to 0 when used for the sinus
+  , phi :: !Double
   }
